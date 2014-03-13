@@ -46,9 +46,13 @@ class XmlReaderParser implements ParserInterface
      */
     public function parse($xmlString, &$isFault)
     {
+ 
         $useErrors = libxml_use_internal_errors(true);
 
         $xml = new XMLReader();
+
+        $xmlString = $this->assureEncodingIsUtf8($xmlString);
+
         $xml->xml($xmlString, 'UTF-8', LIBXML_COMPACT | LIBXML_NOCDATA | LIBXML_NOBLANKS);
         $xml->setParserProperty(XMLReader::VALIDATE, false);
         $xml->setParserProperty(XMLReader::LOADDTD, false);
@@ -88,6 +92,7 @@ class XmlReaderParser implements ParserInterface
         $depth = 0;
         $nextExpectedElements = 0b000000000000000000000000001;
         $i = 0;
+
         while ($xml->read()) {
             $i++;
             $nodeType = $xml->nodeType;
@@ -355,5 +360,22 @@ class XmlReaderParser implements ParserInterface
         libxml_use_internal_errors($useErrors);
 
         return $aggregates ? array_pop($aggregates[0]) : null;
+    }
+
+    /**
+     * Uses an heuristic to determine if the xmlString encoding is not UTF-8 and assures that the encoding is UTF-8
+     * @param $xmlString
+     * @return string
+     */
+    private function assureEncodingIsUtf8($xmlString)
+    {
+        $encoding = mb_detect_encoding($xmlString, "UTF-8,ISO-8859-1");
+        if ($encoding == 'UTF-8')
+            return $xmlString;
+
+        // No encoding detected - falling back to UTF-8 in order to keep as much information as possible
+        $encoding = $encoding == '' ? 'UTF-8': $encoding;
+
+        return iconv($encoding, "UTF-8//IGNORE//TRANSLIT", $xmlString);
     }
 }
