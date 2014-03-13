@@ -1,6 +1,6 @@
 {
     "name": "lstrojny-fxmlrpc",
-    "version": "0.0.1-register.it",
+    "version": "dev-bugfix",
     "devDependencies": {
         "node-xmlrpc": "git://github.com/baalexander/node-xmlrpc.git"
     }
