@@ -244,7 +244,7 @@ class XmlReaderParser implements ParserInterface
 
                         case 'value':
                             $nextExpectedElements = 0b100100000011100100011011100;
-                            $aggregates[$depth][] = $aggregates[$depth + 1];
+                            $aggregates[$depth][] = isset($aggregates[$depth + 1]) ? $aggregates[$depth + 1] : null; 
                             break;
 
                         case 'array':
