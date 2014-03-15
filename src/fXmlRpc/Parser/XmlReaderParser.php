@@ -110,21 +110,21 @@ class XmlReaderParser implements ParserInterface
             }
 
             $tagName = $xml->localName;
-            if ($nextExpectedElements !== null &&
-                ($flag = isset(${'flag' . $tagName}) ? ${'flag' . $tagName} : -1) &&
-                ($nextExpectedElements & $flag) !== $flag) {
-                throw RuntimeException::unexpectedTag(
-                    $tagName,
-                    $nextExpectedElements,
-                    get_defined_vars(),
-                    $xml->depth,
-                    $xml->readOuterXml()
-                );
-            }
 
             PROCESSING:
             switch ($nodeType) {
                 case XMLReader::ELEMENT:
+                    if ($nextExpectedElements !== null &&
+                        ($flag = isset(${'flag' . $tagName}) ? ${'flag' . $tagName} : -1) &&
+                        ($nextExpectedElements & $flag) !== $flag) {
+                        throw RuntimeException::unexpectedTag(
+                             $tagName,
+                             $nextExpectedElements,
+                             get_defined_vars(),
+                             $xml->depth,
+                             $xml->readOuterXml()
+                        );
+                    }    
                     switch ($tagName) {
                         case 'methodResponse':
                             // Next: params, fault
